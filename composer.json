@@ -1,0 +1,61 @@
+{
+    "name": "eliel-elie/laravel-fluent-viacep",
+    "description": "A fluent ViaCEP API wrapper for Laravel",
+    "keywords": [
+        "laravel",
+        "viacep",
+        "cep",
+        "brazil",
+        "address",
+        "fluent"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Eliel",
+            "email": "eliel_elie@hotmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "illuminate/support": "^10.0|^11.0|^12.0",
+        "illuminate/http": "^10.0|^11.0|^12.0",
+        "illuminate/cache": "^10.0|^11.0|^12.0"
+    },
+    "require-dev": {
+        "pestphp/pest": "^2.0|^3.0",
+        "pestphp/pest-plugin-laravel": "^2.0|^3.0",
+        "orchestra/testbench": "^8.0|^9.0|^10.0",
+        "laravel/pint": "^1.13"
+    },
+    "autoload": {
+        "psr-4": {
+            "ViaCep\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ViaCep\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ViaCep\\ViaCepServiceProvider"
+            ],
+            "aliases": {
+                "ViaCep": "ViaCep\\Facades\\ViaCep"
+            }
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
