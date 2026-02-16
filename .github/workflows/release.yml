@@ -7,6 +7,9 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
   test-and-lint:
     runs-on: ubuntu-latest
@@ -54,15 +57,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get version from tag
-        id: tag_version
-        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
-
       - name: Extract Changelog Entry
         id: changelog_reader
         uses: alex-page/changelog-reader-action@v2
         with:
-          version: ${{ steps.tag_version.outputs.VERSION }}
+          version: ${{ github.ref_name }}
           path: ./CHANGELOG.md
 
       - name: Create Release
