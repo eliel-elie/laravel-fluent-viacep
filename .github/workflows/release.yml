@@ -56,13 +56,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Extract Version from Changelog
-        id: extract_version
+      - name: Extract Version and Notes from Changelog
+        id: changelog
         run: |
-          # Extracts the first version found in the format ## [vX.Y.Z]
+          # Extract version (e.g., v1.0.0)
           VERSION=$(sed -n 's/^## \[\(v[0-9.]*\)\].*/\1/p' CHANGELOG.md | head -n1)
-          echo "Detected version: $VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          
+          # Extract notes for this version
+          # It captures everything between the first ## [vX.Y.Z] and the next ## header
+          sed -n "/## \[$VERSION\]/,/## /p" CHANGELOG.md | sed '1d;$d' > release_notes.md
+          
+          echo "Detected version: $VERSION"
 
       - name: Check if Tag Exists
         id: check_tag
@@ -75,23 +80,15 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
         env:
-          VERSION: ${{ steps.extract_version.outputs.VERSION }}
-
-      - name: Extract Changelog Entry
-        if: steps.check_tag.outputs.exists == 'false'
-        id: changelog_reader
-        uses: alex-page/changelog-reader-action@v2
-        with:
-          version: ${{ steps.extract_version.outputs.VERSION }}
-          path: ./CHANGELOG.md
+          VERSION: ${{ steps.changelog.outputs.VERSION }}
 
       - name: Create Release and Tag
         if: steps.check_tag.outputs.exists == 'false'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.extract_version.outputs.VERSION }}
-          body: ${{ steps.changelog_reader.outputs.log_entry }}
-          name: Release ${{ steps.extract_version.outputs.VERSION }}
+          tag_name: ${{ steps.changelog.outputs.VERSION }}
+          body_path: release_notes.md
+          name: Release ${{ steps.changelog.outputs.VERSION }}
           draft: false
           prerelease: false
         env:
