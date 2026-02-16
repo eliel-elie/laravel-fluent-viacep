@@ -63,11 +63,12 @@ jobs:
           VERSION=$(sed -n 's/^## \[\(v[0-9.]*\)\].*/\1/p' CHANGELOG.md | head -n1)
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           
-          # Extract notes for this version
-          # It captures everything between the first ## [vX.Y.Z] and the next ## header
-          sed -n "/## \[$VERSION\]/,/## /p" CHANGELOG.md | sed '1d;$d' > release_notes.md
+          # Extract notes using awk (everything between the version header and the next ## header or EOF)
+          awk "/^## \[$VERSION\]/{flag=1;next}/^## /{flag=0}flag" CHANGELOG.md > release_notes.md
           
           echo "Detected version: $VERSION"
+          echo "Notes content:"
+          cat release_notes.md
 
       - name: Check if Tag Exists
         id: check_tag
