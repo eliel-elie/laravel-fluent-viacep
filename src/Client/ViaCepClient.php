@@ -335,9 +335,7 @@ class ViaCepClient
 
         if ($this->cep) {
             $url = "{$this->baseUrl}/{$this->cep}/{$endpoint}/";
-        }
-
-        elseif ($this->state && $this->city && $this->street) {
+        } elseif ($this->state && $this->city && $this->street) {
             $url = "{$this->baseUrl}/{$this->state}/{$this->city}/{$this->street}/{$endpoint}/";
         } else {
             throw new \RuntimeException('Either CEP or State/City/Street must be provided');

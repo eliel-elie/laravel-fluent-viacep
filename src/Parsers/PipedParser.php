@@ -13,7 +13,7 @@ class PipedParser implements ParserInterface
         $data  = [];
 
         foreach ($parts as $part) {
-            if (!str_contains($part, ':')) {
+            if (! str_contains($part, ':')) {
                 continue;
             }
 
