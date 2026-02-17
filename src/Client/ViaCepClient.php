@@ -4,12 +4,10 @@ namespace ViaCep\Client;
 
 use Closure;
 use Exception;
-use RuntimeException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use ViaCep\DTO\Address;
 use ViaCep\Enums\ResponseFormat;
-use ViaCep\Exceptions\CepNotFoundException;
 use ViaCep\Exceptions\InvalidCepException;
 use ViaCep\Parsers\JsonParser;
 use ViaCep\Parsers\JsonpParser;
