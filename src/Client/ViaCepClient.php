@@ -4,10 +4,12 @@ namespace ViaCep\Client;
 
 use Closure;
 use Exception;
+use RuntimeException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use ViaCep\DTO\Address;
 use ViaCep\Enums\ResponseFormat;
+use ViaCep\Exceptions\CepNotFoundException;
 use ViaCep\Exceptions\InvalidCepException;
 use ViaCep\Parsers\JsonParser;
 use ViaCep\Parsers\JsonpParser;
@@ -47,6 +49,8 @@ class ViaCepClient
     protected ?string $street        = null;
 
     protected array $bulkCeps        = [];
+
+    protected bool $isBulk           = false;
 
     public function __construct()
     {
@@ -172,6 +176,7 @@ class ViaCepClient
      */
     public function bulk(array $ceps): self
     {
+        $this->isBulk   = true;
         $this->bulkCeps = [];
 
         foreach ($ceps as $cep) {
@@ -191,6 +196,16 @@ class ViaCepClient
     public function timeout(int $seconds): self
     {
         $this->timeout = $seconds;
+
+        return $this;
+    }
+
+    /**
+     * Set the base URL.
+     */
+    public function setBaseUrl(string $url): self
+    {
+        $this->baseUrl = $url;
 
         return $this;
     }
@@ -252,7 +267,7 @@ class ViaCepClient
      */
     public function get(): Address|array|string
     {
-        if (! empty($this->bulkCeps)) {
+        if ($this->isBulk) {
             return $this->executeBulkRequest();
         }
 
@@ -308,12 +323,17 @@ class ViaCepClient
         foreach ($this->bulkCeps as $cep) {
             try {
                 $client        = new self;
-                $client->format($this->format)
+                $client->setBaseUrl($this->baseUrl)
+                    ->format($this->format)
                     ->timeout($this->timeout)
                     ->retry($this->retryTimes);
 
                 if ($this->useCache && $this->cacheTtl) {
-                    $client->cache($this->cacheTtl);
+                    $client->cache($this->cacheTtl, $this->cacheKey);
+                }
+
+                if (! $this->useCache) {
+                    $client->withoutCache();
                 }
 
                 $results[$cep] = $client->cep($cep)->get();

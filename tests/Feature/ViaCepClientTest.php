@@ -67,14 +67,25 @@ describe('ViaCepClient', function () {
         Http::assertSentCount(1);
     });
 
-    it('can return raw response', function () {
-        $json     = '{"cep": "01001-000"}';
-        Http::fake([
-            'viacep.com.br/ws/01001000/json/' => Http::response($json, 200),
-        ]);
+        it('can return raw response', function () {
 
-        $response = ViaCep::cep('01001000')->raw();
+            $json = '{"cep": "01001-000"}';
 
-        expect($response)->toBe($json);
+            Http::fake([
+                'viacep.com.br/ws/01001000/json/' => Http::response($json, 200),
+            ]);
+
+            $response = ViaCep::cep('01001000')->raw();
+
+            expect($response)->toBe($json);
+        });
+
+        it('returns an empty array when provided with invalid ceps in bulk', function () {
+
+            $results = ViaCep::bulk(['invalid', '123'])->get();
+
+            expect($results)->toBeArray()
+                ->and($results)->toBeEmpty();
+        });
+
     });
-});

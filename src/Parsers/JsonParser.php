@@ -16,14 +16,17 @@ class JsonParser implements ParserInterface
             throw new RuntimeException('Invalid JSON response');
         }
 
+        // Check for error
         if (isset($data['erro']) && ($data['erro'] === true || $data['erro'] === 'true')) {
             throw new CepNotFoundException('CEP not found');
         }
 
+        // Single response
         if (isset($data['cep'])) {
             return Address::fromArray($data);
         }
 
+        // Multiple responses (address search)
         if (is_array($data)) {
             return array_map(
                 fn ($item) => Address::fromArray($item),
