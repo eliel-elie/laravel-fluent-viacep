@@ -6,6 +6,7 @@ use Closure;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use RuntimeException;
 use ViaCep\DTO\Address;
 use ViaCep\Enums\ResponseFormat;
 use ViaCep\Exceptions\InvalidCepException;
@@ -299,7 +300,7 @@ class ViaCepClient
             ->get($url);
 
         if (! $response->successful()) {
-            throw new \RuntimeException("Request failed with status {$response->status()}");
+            throw new RuntimeException("Request failed with status {$response->status()}");
         }
 
         $body     = $response->body();
@@ -356,7 +357,7 @@ class ViaCepClient
         } elseif ($this->state && $this->city && $this->street) {
             $url = "{$this->baseUrl}/{$this->state}/{$this->city}/{$this->street}/{$endpoint}/";
         } else {
-            throw new \RuntimeException('Either CEP or State/City/Street must be provided');
+            throw new RuntimeException('Either CEP or State/City/Street must be provided');
         }
 
         if ($this->format === ResponseFormat::JSONP && $this->jsonpCallback) {
