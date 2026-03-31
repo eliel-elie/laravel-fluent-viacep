@@ -36,7 +36,7 @@ A modern, fluent, and highly customizable wrapper for the ViaCEP API, designed s
 You can install the package via composer:
 
 ```bash
-composer require elielelie/laravel-fluent-viacep
+composer require eliel-elie/laravel-fluent-viacep
 ```
 
 The service provider will automatically register itself.
